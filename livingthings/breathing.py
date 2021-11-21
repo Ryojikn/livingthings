@@ -37,16 +37,16 @@ class Breathing:
         pwm=False,
     ):
         if mode == "inhale":
-            inhale_factor = 1 / alpha
-            inhale_frequency = 60 / (breathing_cycle * inhale_factor)
-            if pwm:
-                return sleep(inhale_frequency / self.pwm_factor)
-            # print(f"inhale for {inhale_frequency}s")
-            return sleep(inhale_frequency)
-        else:
-            exhale_factor = 1 / (1 - alpha)
-            # print(f"exhale for {60 / (breathing_cycle * exhale_factor)}s")
-            return sleep(60 / (breathing_cycle * exhale_factor))
+            factor = 1 / alpha
+        elif mode == "exhale":
+            factor = 1 / (1 - alpha)
+
+        print(factor)
+        frequency = 60 / (breathing_cycle * factor)
+        if pwm:
+            return sleep(frequency / self.pwm_factor)
+        print(f"{mode} for {frequency}s")
+        return sleep(frequency)
 
     def breath(
         self,
@@ -83,19 +83,6 @@ class Breathing:
                                 alpha=alpha,
                                 pwm=True,
                             )
-                    else:
-                        self.device.on()
-                        self.__inhale_exhale(
-                            self.breathing_cycle, mode="inhale", alpha=alpha
-                        )
-                else:
-                    print("Inhale")
-                    self.__inhale_exhale(
-                        self.breathing_cycle, mode="inhale", alpha=alpha
-                    )
-
-                if not dry_run:
-                    if pwm:
                         for i in range(0, self.pwm_factor):
                             self.device.value = round(1 - (i * 1 / self.pwm_factor), 3)
                             self.__inhale_exhale(
@@ -107,9 +94,17 @@ class Breathing:
                     else:
                         self.device.on()
                         self.__inhale_exhale(
+                            self.breathing_cycle, mode="inhale", alpha=alpha
+                        )
+                        self.device.off()
+                        self.__inhale_exhale(
                             self.breathing_cycle, mode="exhale", alpha=alpha
                         )
                 else:
+                    print("Inhale")
+                    self.__inhale_exhale(
+                        self.breathing_cycle, mode="inhale", alpha=alpha
+                    )
                     print("Exhale")
                     self.__inhale_exhale(
                         self.breathing_cycle, mode="exhale", alpha=alpha
