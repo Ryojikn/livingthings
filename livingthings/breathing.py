@@ -21,13 +21,14 @@ class Breathing:
         bpm: int = 60,
         illness_factor: float = 1,
         alpha: float = 0.5,
+        pwm_factor=1000,
     ):
         self.device = device
         self.bpm = bpm
         self.illness_factor: float = illness_factor
         self.alpha = alpha
         self.breathing_cycle = None
-        self.pwm_factor = 1000
+        self.pwm_factor = pwm_factor
 
     def __inhale_exhale(
         self,
