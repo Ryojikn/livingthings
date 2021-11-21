@@ -12,7 +12,8 @@ class Breathing:
     device: GPIOMeta() - Instantiated GPIO zero device for raspberry pi.
     bpm: int - beats per minute of the living thing.
     illness_factor: float - Higher than 1 values will correspond to a faster breathing in relation to bpm. Lower values will correspond to slower breathing. Apply illness accordingly.
-    alpha: float -
+    alpha: float - Alpha gives the balance between inhale and exhale. Default 0.5
+    pwm_factor: int - How much divisions you'll apply in your pwm behavior. Default 1000
     """
 
     def __init__(
@@ -21,7 +22,7 @@ class Breathing:
         bpm: int = 60,
         illness_factor: float = 1,
         alpha: float = 0.5,
-        pwm_factor=1000,
+        pwm_factor: int = 1000,
     ):
         self.device = device
         self.bpm = bpm
