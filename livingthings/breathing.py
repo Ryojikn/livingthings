@@ -38,7 +38,13 @@ class Breathing:
             exhale_factor = 1 / (1 - alpha)
             return sleep(60 / (breathing_cycle * exhale_factor))
 
-    def breath(self, bpm: int = 60, illness_factor: float = 1, alpha: float = 0.5):
+    def breath(
+        self,
+        bpm: int = 60,
+        illness_factor: float = 1,
+        alpha: float = 0.5,
+        dry_run=False,
+    ):
         """
         Parameters
         -----------------
@@ -56,10 +62,12 @@ class Breathing:
 
         try:
             while True:
-                # self.device.on()
+                if not dry_run:
+                    self.device.on()
                 print("Inhale")
                 self.__inhale_exhale(self.breathing_cycle, mode="inhale", alpha=alpha)
-                # self.device.off()
+                if not dry_run:
+                    self.device.off()
                 print("Exhale")
                 self.__inhale_exhale(self.breathing_cycle, mode="exhale", alpha=alpha)
         except (KeyboardInterrupt, SystemExit):
