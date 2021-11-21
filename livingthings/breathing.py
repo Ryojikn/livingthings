@@ -41,12 +41,11 @@ class Breathing:
             inhale_frequency = 60 / (breathing_cycle * inhale_factor)
             if pwm:
                 return sleep(inhale_frequency / self.pwm_factor)
-
-            print(f"inhale for {inhale_frequency}s")
+            # print(f"inhale for {inhale_frequency}s")
             return sleep(inhale_frequency)
         else:
             exhale_factor = 1 / (1 - alpha)
-            print(f"exhale for {60 / (breathing_cycle * exhale_factor)}s")
+            # print(f"exhale for {60 / (breathing_cycle * exhale_factor)}s")
             return sleep(60 / (breathing_cycle * exhale_factor))
 
     def breath(
