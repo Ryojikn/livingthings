@@ -27,15 +27,26 @@ class Breathing:
         self.illness_factor: float = illness_factor
         self.alpha = alpha
         self.breathing_cycle = None
+        self.pwm_factor = 1000
 
     def __inhale_exhale(
-        self, breathing_cycle: float = None, mode="inhale", alpha: float = 0.5
+        self,
+        breathing_cycle: float = None,
+        mode="inhale",
+        alpha: float = 0.5,
+        pwm=False,
     ):
         if mode == "inhale":
             inhale_factor = 1 / alpha
-            return sleep(60 / (breathing_cycle * inhale_factor))
+            inhale_frequency = 60 / (breathing_cycle * inhale_factor)
+            if pwm:
+                return sleep(inhale_frequency / self.pwm_factor)
+
+            print(f"inhale for {inhale_frequency}s")
+            return sleep(inhale_frequency)
         else:
             exhale_factor = 1 / (1 - alpha)
+            print(f"exhale for {60 / (breathing_cycle * exhale_factor)}s")
             return sleep(60 / (breathing_cycle * exhale_factor))
 
     def breath(
@@ -43,6 +54,7 @@ class Breathing:
         bpm: int = 60,
         illness_factor: float = 1,
         alpha: float = 0.5,
+        pwm=False,
         dry_run=False,
     ):
         """
@@ -63,13 +75,47 @@ class Breathing:
         try:
             while True:
                 if not dry_run:
-                    self.device.on()
-                print("Inhale")
-                self.__inhale_exhale(self.breathing_cycle, mode="inhale", alpha=alpha)
+                    if pwm:
+                        for i in range(0, self.pwm_factor):
+                            self.device.value = round(i * 1 / self.pwm_factor, 3)
+                            self.__inhale_exhale(
+                                self.breathing_cycle,
+                                mode="inhale",
+                                alpha=alpha,
+                                pwm=True,
+                            )
+                    else:
+                        self.device.on()
+                        self.__inhale_exhale(
+                            self.breathing_cycle, mode="inhale", alpha=alpha
+                        )
+                else:
+                    print("Inhale")
+                    self.__inhale_exhale(
+                        self.breathing_cycle, mode="inhale", alpha=alpha
+                    )
+
                 if not dry_run:
-                    self.device.off()
-                print("Exhale")
-                self.__inhale_exhale(self.breathing_cycle, mode="exhale", alpha=alpha)
+                    if pwm:
+                        for i in range(0, self.pwm_factor):
+                            self.device.value = round(1 - (i * 1 / self.pwm_factor), 3)
+                            self.__inhale_exhale(
+                                self.breathing_cycle,
+                                mode="exhale",
+                                alpha=alpha,
+                                pwm=True,
+                            )
+                    else:
+                        self.device.on()
+                        self.__inhale_exhale(
+                            self.breathing_cycle, mode="exhale", alpha=alpha
+                        )
+                else:
+                    print("Exhale")
+                    self.__inhale_exhale(
+                        self.breathing_cycle, mode="exhale", alpha=alpha
+                    )
+
         except (KeyboardInterrupt, SystemExit):
             print("Breathing stopped manually...")
 
