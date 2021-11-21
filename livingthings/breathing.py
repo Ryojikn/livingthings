@@ -42,7 +42,6 @@ class Breathing:
         elif mode == "exhale":
             factor = 1 / (1 - alpha)
 
-        print(factor)
         frequency = 60 / (breathing_cycle * factor)
         if pwm:
             return sleep(frequency / self.pwm_factor)
